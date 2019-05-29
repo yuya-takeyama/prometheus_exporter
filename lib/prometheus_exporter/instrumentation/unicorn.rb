@@ -2,6 +2,7 @@
 
 begin
   require 'raindrops'
+  require 'json'
 rescue LoadError
   # No raindrops available, dont do anything
 end
@@ -50,6 +51,7 @@ module PrometheusExporter::Instrumentation
     private
 
     def worker_process_count
+      warn "#worker_process_count"
       return nil unless File.exist?(@pid_file)
       pid = File.read(@pid_file)
 
@@ -57,7 +59,9 @@ module PrometheusExporter::Instrumentation
 
       # find all processes whose parent is the unicorn master
       # but we're actually only interested in the number of processes (= lines of output)
+      warn "Running ps command"
       result = `ps --no-header -o pid --ppid #{pid}`
+      warn result.to_json
       result.lines.count
     end
 
